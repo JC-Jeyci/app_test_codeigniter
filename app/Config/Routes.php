@@ -32,6 +32,18 @@ $routes->get('categorias/delete/(:num)', 'Categorias::delete/$1');
 $routes->get('categorias/eliminados', 'Categorias::eliminados');
 $routes->get('categorias/reingresar/(:num)', 'Categorias::reingresar/$1');
 
+/**
+ * @var RouteCollection $routes Productos
+ */
+$routes->get('productos', 'Productos::index');
+$routes->get('productos/nuevo', 'Productos::nuevo');
+$routes->post('productos/insert', 'Productos::insert');
+$routes->get('productos/update/(:num)', 'Productos::update/$1');
+$routes->post('productos/actualizar', 'Productos::actualizar');
+$routes->get('productos/delete/(:num)', 'Productos::delete/$1');
+$routes->get('productos/eliminados', 'Productos::eliminados');
+$routes->get('productos/reingresar/(:num)', 'Productos::reingresar/$1');
+
 
 /**
  * @var RouteCollection $routes Ejemplos
