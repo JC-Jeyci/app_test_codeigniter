@@ -8,10 +8,27 @@ use App\Models\UnidadesModel;
 class Unidades extends BaseController
 {
     protected $unidades;
+    protected $reglas;
 
     public function __construct()
     {
         $this->unidades = new UnidadesModel();
+        helper(['form']);
+
+        $this->reglas = [
+            'nombre' => [
+                'rules' => 'required',
+                'errors' => [
+                    'required' => 'El campo {field} es obligatorio.'
+                ]
+            ],
+            'abreviatura' => [
+                'rules' => 'required',
+                'errors' => [
+                    'required' => 'El campo {field} es obligatorio.'
+                ]
+            ]
+        ];
     }
 
     public function index($activo = 1)
@@ -44,7 +61,7 @@ class Unidades extends BaseController
 
     public function insert()
     {
-        if ($this->request->getMethod() == "POST" && $this->validate(['nombre' => 'required', 'abreviatura' => 'required'])) {
+        if ($this->request->getMethod() == "POST" && $this->validate($this->reglas)) {
 
             $this->unidades->save(
                 [
@@ -62,11 +79,16 @@ class Unidades extends BaseController
         }
     }
 
-    public function update($id)
+    public function update($id, $valid = null)
     {
         $unidad = $this->unidades->where('id', $id)->first();
 
         $data = ['titulo' => 'Editar unidad', 'datos' => $unidad];
+
+        if ($valid != null) {
+            $data = ['titulo' => 'Editar unidad', 'datos' => $unidad, 'validation' => $valid];
+        }
+
         echo view('header');
         echo view('unidades/update', $data);
         echo view('footer');
@@ -74,15 +96,20 @@ class Unidades extends BaseController
 
     public function actualizar()
     {
-        $this->unidades->update(
-            $this->request->getPost('id'),
-            [
-                'nombre' => $this->request->getPost('nombre'),
-                'abreviatura' => $this->request->getPost('abreviatura')
-            ]
-        );
+        if ($this->request->getMethod() == "POST" && $this->validate($this->reglas)) {
 
-        return redirect()->to(base_url() . 'unidades');
+            $this->unidades->update(
+                $this->request->getPost('id'),
+                [
+                    'nombre' => $this->request->getPost('nombre'),
+                    'abreviatura' => $this->request->getPost('abreviatura')
+                ]
+            );
+
+            return redirect()->to(base_url() . 'unidades');
+        } else {
+            return $this->update($this->request->getPost('id'), $this->validator);
+        }
     }
 
     public function delete($id)
